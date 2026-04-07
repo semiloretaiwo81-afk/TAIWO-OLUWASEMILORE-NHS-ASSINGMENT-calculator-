@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taiwo Oluwasemilore Israel Calculator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a0033 0%, #2d0052 50%, #1a0033 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(147, 51, 234, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite;
+            box-shadow: 0 0 10px rgba(147, 51, 234, 0.8);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10%, 90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+        .calculator-container {
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), 0 0 100px rgba(147,51,234,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: floatCalculator 6s ease-in-out infinite;
+        }
+        @keyframes floatCalculator { 0%,100%{transform:translateY(0px);}50%{transform:translateY(-10px);} }
+        .calculator {
+            width: 400px;
+            background: linear-gradient(145deg,#ffffff 0%,#f3e8ff 100%);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.8),0 20px 40px rgba(88,28,135,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .calculator::before {
+            content:'';
+            position:absolute;
+            top:-2px;left:-2px;right:-2px;bottom:-2px;
+            background: linear-gradient(45deg,#9333ea,#c084fc,#9333ea,#a855f7);
+            border-radius: 22px;
+            z-index: -1;
+            opacity:0.8;
+            animation: glow 3s ease-in-out infinite;
+        }
+        @keyframes glow {0%,100%{opacity:0.5;}50%{opacity:1;}}
+        .display {
+            background: linear-gradient(180deg,#1a1a2e 0%,#16213e 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5),0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .display::after {
+            content:'';
+            position:absolute;top:0;left:0;right:0;height:50%;
+            background: linear-gradient(180deg, rgba(147,51,234,0.1) 0%, transparent 100%);
+            pointer-events:none;
+        }
+        .previous-operand { color:#c084fc; font-size:1.2rem; text-align:right; min-height:24px; text-shadow:0 0 10px rgba(192,132,252,0.5);}
+        .current-operand { color:#fff; font-size:2.5rem; text-align:right; margin-top:10px; text-shadow:0 0 20px rgba(147,51,234,0.8); font-weight:300; letter-spacing:1px;}
+        .buttons { display:grid; grid-template-columns: repeat(5,1fr); gap:12px; }
+        button { border:none; outline:none; cursor:pointer; font-size:1.1rem; font-weight:600; padding:18px 10px; border-radius:12px; transition: all 0.2s cubic-bezier(0.4,0,0.2,1); position:relative; overflow:hidden; text-transform:uppercase; letter-spacing:0.5px; }
+        button:active { transform:scale(0.95); }
+        button::after { content:''; position:absolute; top:50%; left:50%; width:0;height:0;border-radius:50%; background:rgba(255,255,255,0.5); transform:translate(-50%,-50%); transition: width 0.6s,height 0.6s; }
+        button:active::after { width:300px;height:300px; }
+        .number { background: linear-gradient(145deg,#fff 0%,#f3e8ff 100%); color:#581c87; box-shadow:0 4px 6px -1px rgba(147,51,234,0.2),0 2px 4px -1px rgba(147,51,234,0.1), inset 0 1px 0 rgba(255,255,255,0.8);}
+        .number:hover { background:linear-gradient(145deg,#f3e8ff 0%,#e9d5ff 100%); transform:translateY(-2px);}
+        .operator { background: linear-gradient(145deg,#9333ea 0%,#7c3aed 100%); color:#fff; box-shadow:0 4px 6px -1px rgba(147,51,234,0.4),0 2px 4px -1px rgba(147,51,234,0.2), inset 0 1px 0 rgba(255,255,255,0.2);}
+        .operator:hover { background:linear-gradient(145deg,#a855f7 0%,#9333ea 100%); transform:translateY(-2px);}
+        .scientific { background: linear-gradient(145deg,#581c87 0%,#4c1d95 100%); color:#e9d5ff; font-size:0.9rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);}
+        .scientific:hover { background:linear-gradient(145deg,#6b21a8 0%,#581c87 100%); transform:translateY(-2px);}
+        .equals { background:linear-gradient(145deg,#dc2626 0%,#b91c1c 100%); color:#fff; }
+        .equals:hover { background:linear-gradient(145deg,#ef4444 0%,#dc2626 100%);}
+        .clear { background:linear-gradient(145deg,#f59e0b 0%,#d97706 100%); color:#fff; }
+        .clear:hover { background:linear-gradient(145deg,#fbbf24 0%,#f59e0b 100%);}
+        .delete { background:linear-gradient(145deg,#64748b 0%,#475569 100%); color:#fff; }
+        .delete:hover { background:linear-gradient(145deg,#94a3b8 0%,#64748b 100%);}
+        .mode-toggle {
+            position:absolute; top:20px; right:20px; background:rgba(147,51,234,0.2); border:1px solid rgba(147,51,234,0.5);
+            color:#e9d5ff; padding:8px 16px; border-radius:20px; cursor:pointer; font-size:0.8rem; transition: all 0.3s; backdrop-filter: blur(10px);
+        }
+        .mode-toggle:hover { background:rgba(147,51,234,0.4); box-shadow:0 0 20px rgba(147,51,234,0.5);}
+        @media (max-width:480px){
+            .calculator { width:100%; max-width:350px; }
+            button { padding:15px 8px; font-size:1rem; }
+            .scientific { font-size:0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <div class="calculator-container">
+        <div class="calculator">
+            <button class="mode-toggle" onclick="toggleMode()">RAD</button>
+            <div class="display">
+                <div class="previous-operand" id="previousOperand"></div>
+                <div class="current-operand" id="currentOperand">0</div>
+            </div>
+
+            <div class="buttons">
+                <!-- Scientific functions -->
+                <button class="scientific" onclick="appendFunction('sin')">sin</button>
+                <button class="scientific" onclick="appendFunction('cos')">cos</button>
+                <button class="scientific" onclick="appendFunction('tan')">tan</button>
+                <button class="scientific" onclick="appendFunction('log')">log</button>
+                <button class="scientific" onclick="appendFunction('ln')">ln</button>
+
+                <button class="scientific" onclick="appendFunction('sqrt')">√</button>
+                <button class="scientific" onclick="appendFunction('pow')">x²</button>
+                <button class="scientific" onclick="appendFunction('exp')">eˣ</button>
+                <button class="scientific" onclick="appendFunction('pi')">π</button>
+                <button class="scientific" onclick="appendFunction('fact')">n!</button>
+
+                <button class="clear" onclick="clearAll()">AC</button>
+                <button class="delete" onclick="deleteLast()">DEL</button>
+                <button class="operator" onclick="appendOperator('(')">(</button>
+                <button class="operator" onclick="appendOperator(')')">)</button>
+                <button class="operator" onclick="appendOperator('^')">^</button>
+
+                <button class="number" onclick="appendNumber('7')">7</button>
+                <button class="number" onclick="appendNumber('8')">8</button>
+                <button class="number" onclick="appendNumber('9')">9</button>
+                <button class="operator" onclick="appendOperator('/')">÷</button>
+                <button class="scientific" onclick="appendFunction('abs')">|x|</button>
+
+                <button class="number" onclick="appendNumber('4')">4</button>
+                <button class="number" onclick="appendNumber('5')">5</button>
+                <button class="number" onclick="appendNumber('6')">6</button>
+                <button class="operator" onclick="appendOperator('*')">×</button>
+                <button class="scientific" onclick="appendFunction('inv')">1/x</button>
+
+                <button class="number" onclick="appendNumber('1')">1</button>
+                <button class="number" onclick="appendNumber('2')">2</button>
+                <button class="number" onclick="appendNumber('3')">3</button>
+                <button class="operator" onclick="appendOperator('-')">−</button>
+                <button class="scientific" onclick="appendFunction('e')">e</button>
+
+                <button class="number" onclick="appendNumber('0')">0</button>
+                <button class="number" onclick="appendNumber('.')">.</button>
+                <button class="number" onclick="appendNumber('00')">00</button>
+                <button class="operator" onclick="appendOperator('+')">+</button>
+                <button class="equals" onclick="calculate()">=</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentOperand = '0';
+        let previousOperand = '';
+        let isRadians = true;
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        function updateDisplay() {
+            document.getElementById('currentOperand').textContent = currentOperand;
+            document.getElementById('previousOperand').textContent = previousOperand;
+        }
+
+        function appendNumber(number) {
+            if (currentOperand === '0' && number !== '.') currentOperand = number;
+            else currentOperand += number;
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            currentOperand += ' ' + op + ' ';
+            updateDisplay();
+        }
+
+        function appendFunction(func) {
+            switch(func){
+                case 'sin': currentOperand = 'sin(' + currentOperand + ')'; break;
+                case 'cos': currentOperand = 'cos(' + currentOperand + ')'; break;
+                case 'tan': currentOperand = 'tan(' + currentOperand + ')'; break;
+                case 'log': currentOperand = 'log(' + currentOperand + ')'; break;
+                case 'ln': currentOperand = 'ln(' + currentOperand + ')'; break;
+                case 'sqrt': currentOperand = '√(' + currentOperand + ')'; break;
+                case 'pow': currentOperand = '(' + currentOperand + ')²'; break;
+                case 'exp': currentOperand = 'e^(' + currentOperand + ')'; break;
+                case 'pi': currentOperand = currentOperand==='0'?'π':currentOperand+'π'; break;
+                case 'fact': currentOperand += '!'; break;
+                case 'abs': currentOperand = '|' + currentOperand + '|'; break;
+                case 'inv': currentOperand = '1/(' + currentOperand + ')'; break;
+                case 'e': currentOperand = currentOperand==='0'?'e':currentOperand+'e'; break;
+            }
+            updateDisplay();
+        }
+
+        function clearAll(){ currentOperand='0'; previousOperand=''; updateDisplay();}
+        function deleteLast(){ currentOperand = currentOperand.length<=1?'0':currentOperand.slice(0,-1); updateDisplay();}
+        function toggleMode(){ isRadians=!isRadians; document.querySelector('.mode-toggle').textContent=isRadians?'RAD':'DEG'; }
+
+        function calculate() {
+            try {
+                let expression = currentOperand
+                    .replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-')
+                    .replace(/π/g,'Math.PI').replace(/\be\b/g,'Math.E')
+                    .replace(/\^/g,'**')
+                    .replace(/sin\((.*?)\)/g,(m,p1)=>`Math.sin(${isRadians?p1:`(${p1})*Math.PI/180`})`)
+                    .replace(/cos\((.*?)\)/g,(m,p1)=>`Math.cos(${isRadians?p1:`(${p1})*Math.PI/180`})`)
+                    .replace(/tan\((.*?)\)/g,(m,p1)=>`Math.tan(${isRadians?p1:`(${p1})*Math.PI/180`})`)
+                    .replace(/log\((.*?)\)/g,'Math.log10($1)')
+                    .replace(/ln\((.*?)\)/g,'Math.log($1)')
+                    .replace(/√\((.*?)\)/g,'Math.sqrt($1)')
+                    .replace(/\((.*?)\)²/g,'Math.pow($1,2)')
+                    .replace(/e\^\((.*?)\)/g,'Math.exp($1)')
+                    .replace(/\|(.*?)\|/g,'Math.abs($1)')
+                    .replace(/1\/\((.*?)\)/g,'1/($1)')
+                    .replace(/(\d+)!/g,(m,n)=>{ let res=1; for(let i=2;i<=parseInt(n);i++) res*=i; return res; });
+
+                previousOperand = currentOperand+' =';
+                currentOperand = eval(expression).toString();
+                if(currentOperand.length>14) currentOperand = parseFloat(currentOperand).toExponential(6);
+                updateDisplay();
+            } catch { currentOperand='Error'; updateDisplay(); setTimeout(()=>{ currentOperand='0'; updateDisplay(); },2000);}
+        }
+
+        document.addEventListener('keydown',(e)=>{
+            if(e.key>='0'&&e.key<='9') appendNumber(e.key);
+            if(e.key==='.') appendNumber('.');
+            if(e.key==='+') appendOperator('+');
+            if(e.key==='-') appendOperator('-');
+            if(e.key==='*') appendOperator('*');
+            if(e.key==='/') appendOperator('/');
+            if(e.key==='(') appendOperator('(');
+            if(e.key===')') appendOperator(')');
+            if(e.key==='^') appendOperator('^');
+            if(e.key==='Enter'||e.key==='=') calculate();
+            if(e.key==='Escape') clearAll();
+            if(e.key==='Backspace') deleteLast();
+        });
+    </script>
+</body>
+</html>ssssss  
